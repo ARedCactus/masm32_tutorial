@@ -4,6 +4,6 @@
 python compile.py [file.asm]
 ```
 **example**
--
-$ python compile.py start\hello.asm
--
+```bash
+python compile.py start\hello.asm
+```
