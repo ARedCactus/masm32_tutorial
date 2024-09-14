@@ -2,10 +2,12 @@
 .model flat,stdcall  ;平坦模式，调用规则
 option casemap:none
 
-include masm32.inc
-include kernel32.inc
-includelib masm32.lib
-includelib kernel32.lib
+; include masm32.inc
+; include kernel32.inc
+; includelib masm32.lib
+; includelib kernel32.lib
+
+include '..include.head.asm'
 
 ;数据段
 .data
