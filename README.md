@@ -1,9 +1,9 @@
 # python 编译脚本
-工作目录执行命令
+## **工作目录执行命令**
 ```bash
-python compile.py [file.asm]
+python compile.py <file.asm>
 ```
-**example**
+## **example**
 ```bash
 python compile.py start\hello.asm
 ```
