@@ -1,39 +1,58 @@
 import os, sys
-from pathlib import Path
 
-if len(sys.argv) != 2:
-    print("At least one parameter")
-    sys.exit()
+def extractPathComponents(path: str) ->list:
+    components = []
+    path = os.path.normpath(path)
+    while True:
+        path, folder = os.path.split(path)
+        if folder:
+            components.append(folder)
+        else:
+            if path:
+                components.append(os.path.basename(os.path.abspath(".")))
+            break
+    components.reverse() # 翻转
+    if "." in components[-1]:
+        components[-1], extension = os.path.splitext(components[-1])
+        if len(extension) != 0:
+            return [components, extension]
+    return [components]
 
-def getFileName(file_path: str) ->str:
-    str_tuple = os.path.splitext(os.path.basename(file_path))
-    return str_tuple[0]
+os.environ["INCLUDE"] = "D:\\masm32\\include"
+os.environ["LIB"] = "D:\\masm32\\lib"
 
-def getParentDir(flie_path: str) ->str:
-    path = Path(path_file)
-    return path.parent.name
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("参数数量错误")
+        sys.exit()
+    components = extractPathComponents(sys.argv[1])
+
+    folders = ["/".join(components[0]), "build/" + "/".join(components[0][:-1]), "bin/" + "/".join(components[0][:-1])]
+    for folder in folders[1:]:
+        if not os.path.exists(folder):
+            os.makedirs(folder)
     
-path_file = str(sys.argv[1])
-parent_dir = getParentDir(path_file) + "/"
-path_obj = "build/" + parent_dir + getFileName(path_file) + ".obj"
+    print("\033[1;36m", "*.obj_path: ", "\033[0m", folders[1])
+    print("\033[1;36m", "*.exe_path: ", "\033[0m", folders[2])
 
-dir_paths = ["build", "bin", "build/"+parent_dir, "bin/"+parent_dir]
-for dir in dir_paths:
-    if not os.path.exists(dir):
-        os.makedirs(dir)
+    command = "ml /c /coff /Fo " + folders[1]+"/"+components[0][-1]+".obj " + folders[0]+components[1] if len(components)==2 else ""
+    print("\033[1;33m", command, "\033[0m")
+    source_file = components[0][-1] + components[1] if len(components)==2 else ""
+    obj_file = components[0][-1] + ".obj"
+    command_result = source_file + " --> " + obj_file
+    if not os.system(command):
+        print("\033[1;32m" + command_result + "\033[0m")
+    else:
+        print("\033[1;31m" + command_result + " failed" + "\033[0m")
+        sys.exit()
+    
+    exe_file = components[0][-1] + ".exe"
+    command = "link /subsystem:console " + folders[1]+"/"+obj_file + " /out:"+folders[2]+"/"+exe_file
+    command_result = obj_file + " --> " + exe_file
+    if not os.system(command):
+        print("\033[1;32m" + command_result + "\033[0m")
+    else:
+        print("\033[1;31m" + command_result + " failed" + "\033[0m")
 
-command = "ml /c /coff /Fo " + path_obj + " " + path_file
-if(not os.system(command)):
-    print("\033[1;32m" + path_file + " --> " + path_obj + "\033[0m")
-else:
-    print("\033[1;31m" + path_file + " --> " + path_obj + " failed\033[0m")
-    sys.exit()
 
-path_exe = "bin/" + parent_dir + getFileName(path_file) + ".exe"
-command = "link /subsystem:console " + path_obj + " /out:" + path_exe
-if(not os.system(command)):
-    print("\033[1;32m" + path_obj + " --> " + path_exe + "\033[0m")
-else:
-    print("\033[1;31m" + path_obj + " --> " + path_exe + " failed\033[0m")
-    sys.exit()
 
