@@ -48,6 +48,7 @@ if __name__ == "__main__":
     
     exe_file = components[0][-1] + ".exe"
     command = "link /subsystem:console " + folders[1]+"/"+obj_file + " /out:"+folders[2]+"/"+exe_file
+    print("\033[1;33m", command, "\033[0m")
     command_result = obj_file + " --> " + exe_file
     if not os.system(command):
         print("\033[1;32m" + command_result + "\033[0m")
